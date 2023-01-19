@@ -34,11 +34,13 @@ def ingresar_prediccion(jugador: str, numero_bazas: int) -> "dict[str:int]":
             print("Debe ingresar un número")
     return jugador_prediccion
 
-def ingresar_jugada(jugador: str, cartas_jugador: "list[tuple]") -> None:
-    print(f"Turno de {jugador}")
-    imprimir_mazo(cartas_jugador, True)
-    jugada = int(input("Qué carta desea jugar?: "))
+def ingresar_jugada(jugador: str, cartas_jugador: "list[tuple]", \
+        palo_baza_carta: "tuple[str, str]", triunfo: "tuple[str, str]") -> "tuple[str, str]":
+    # print(f"Turno de {jugador}")
+    # imprimir_mazo(cartas_jugador, True)
+    jugada = int(input(f"{jugador}, qué carta desea jugar?: "))
     # Corroborar jugada
+    return cartas_jugador[jugada-1]
 
 def whist(jugadores: "list[str]"):
     # Herramientas funcionales: lambda, map y filter. También está reduce pero con importación.
@@ -46,23 +48,14 @@ def whist(jugadores: "list[str]"):
     mazo_ordenado_prueba = [('2', '♥️'), ('7', '♦️'), ('9', '♠️'), ('A', '♣️'), \
         ('3', '♥️'), ('10', '♦️'), ('3', '♠️'), ('K', '♣️')]
     puntos_juego = dict.fromkeys(jugadores, 0)
-    # for turno in BAZAS_POR_MANO:
-    numero_bazas = 8
-    for baza in range(numero_bazas):
-        cartas_en_posesion, triunfo = repartir_cartas(jugadores, numero_bazas)
-        mano = (baza, cartas_en_posesion, triunfo)
-        predicciones = obtener_predicciones(mano, jugadores)
-        puntos_mano = jugar_baza(jugadores, mano, predicciones)
+    for mano in BAZAS_POR_MANO:
+        cartas_en_posesion, triunfo = repartir_cartas(jugadores, mano)
+        datos_mano = (mano, cartas_en_posesion, triunfo)
+        predicciones = obtener_predicciones(datos_mano, jugadores)
+        puntos_mano = jugar_mano(jugadores, datos_mano, predicciones)
         for jugador in puntos_juego.keys():
             puntos_juego[jugador] += puntos_mano[jugador]
-        # Rotar lista de jugadores
-        
-    for baza in range(8, 0, -1):
-        cartas_en_juego, triunfo = repartir_cartas(jugadores, baza)
-        # Prediccion de cada jugador
-        # Jugar baza
-        # Rotar lista de jugadores
-        pass
+        # Rotar lista de jugadores   
     pass
 
 def repartir_cartas(jugadores: "list[str]", numero_bazas: int) -> "tuple[dict, set]":
@@ -83,7 +76,12 @@ def repartir_cartas(jugadores: "list[str]", numero_bazas: int) -> "tuple[dict, s
     triunfo = random.choice(list(mazo))
     return cartas_en_posesion, triunfo
 
-def obtener_predicciones(mano: "tuple[int, dict, tuple]", jugadores: "list[str]") -> "dict[str:int]":
+def obtener_predicciones(mano: "tuple[int, dict, tuple]", jugadores: "list[str]") -> \
+        "dict[str:int]":
+    """ Dado el triunfo de la baza, las cartas de los jugadores, y el orden para 
+        solicitar cada prediccion, esta función se encarga de mostrarle a cada uno 
+        la información pertinente para que pueda realizar la prediccion de la mano. """
+    
     numero_bazas, cartas_en_posesion, triunfo = mano
     predicciones_mano = dict()
     for numero, jugador in enumerate(jugadores):
@@ -101,21 +99,50 @@ def obtener_predicciones(mano: "tuple[int, dict, tuple]", jugadores: "list[str]"
         clear()
     return predicciones_mano
 
-def jugar_baza(jugadores: "list[str]", mano: "tuple[int, dict[tuple:str], tuple[str, str]]", \
-    predicciones: "dict[str:int]") -> "dict[str:int]":
+def jugar_mano(jugadores: "list[str]", mano: "tuple[int, dict[tuple:str], tuple[str, str]]", \
+        predicciones: "dict[str:int]") -> "dict[str:int]":
+    bazas_ganadas = dict.fromkeys(jugadores, 0)
     numero_bazas, cartas_en_posesion, triunfo = mano
-    # mesa = list()
-    for numero, jugador in enumerate(jugadores):
-        # Mostrar cartas en la mesa y las del jugador
-        cartas_jugador = [carta for carta, nombre in cartas_en_posesion.items() \
-            if nombre == jugador]
-        if numero == 0:
-            palo = ingresar_jugada(jugador, cartas_jugador)
-        imprimir_triunfo_palo(triunfo, palo)
-        imprimir_mazo(list(), False)
-        jugada = ingresar_jugada(jugador, cartas_jugador) # Esta funcion debe corroborar que la jugada sea correcta
-        # baza = 
-        pass
+    for baza in range(numero_bazas):
+        mesa = dict()
+        palo_baza = None
+        for numero, jugador in enumerate(jugadores):
+            cartas_jugador = [carta for carta, nombre in cartas_en_posesion.items() \
+                if nombre == jugador]
+            clear()
+            imprimir_triunfo_palo(triunfo, palo_baza)
+            imprimir_mazo([triunfo], False)
+            imprimir_mazo(cartas_jugador, True)
+            jugada = ingresar_jugada(jugador, cartas_jugador, palo_baza, triunfo)
+            # Esta funcion debe corroborar que la jugada sea correcta
+            if numero == 0:
+                palo_baza = jugada
+            cartas_en_posesion[jugada] = None
+            mesa[jugada] = jugador
+        clear()
+        print(f"La baza la ganó {ganador_baza}")
+        ganador_baza = determinar_ganador_baza(mesa, palo_baza, triunfo)
+        bazas_ganadas[ganador_baza] += 1
+        jugadores = actualizar_orden_jugadores(jugadores, ganador_baza)
+    puntos_mano = determinar_puntos_mano(bazas_ganadas, predicciones)
+    return puntos_mano
+
+def determinar_ganador_baza(mesa: "dict[tuple:str]", palo_baza_carta: "tuple[str, str]", \
+        triunfo: "tuple[str, str]") -> str:
+
+    VALORES = [str(i+1) for i in range(1, 10)] + ['J', 'Q', 'K', 'A']
+    palo_triunfo = triunfo[1]
+    palo_baza = palo_baza_carta[1]
+    ganador = palo_baza_carta
+    for carta in mesa.keys():
+        if carta[1] == palo_triunfo and ganador[1] != palo_triunfo:
+            ganador = carta
+        elif carta[1] == palo_triunfo and VALORES.index(carta[0]) > VALORES.index(ganador[0]):
+            ganador = carta
+        elif carta[1] == palo_baza and VALORES.index(carta[0]) > VALORES.index(ganador[0]):
+            ganador = carta
+    jugador_ganador = mesa[ganador]
+    return jugador_ganador
 
 # ------------------
 def ordenar_cartas_por_palo(cartas: "set[tuple]") -> "list[tuple]":
