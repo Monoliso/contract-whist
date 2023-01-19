@@ -1,0 +1,165 @@
+import random
+# import collections, functools, operator
+from impresion import *
+
+def ingresar_jugadores():
+    """ Se solicita al usuario inicial que ingrese los nombres de los jugadores separados por
+        coma. La cantidad mínima es 3, y la máxima 7. """
+
+    condicion = True
+    while condicion:
+        jugadores_str = input("Ingrese los nombres de los jugadores separados por coma: ")
+        jugadores_lista = jugadores_str.split(',')
+        if len(jugadores_lista) < 3 or len(jugadores_lista) > 7:
+            print("La cantidad de jugadores no es correcta, vuelva a intentarlo.")
+        else: condicion = False
+    return jugadores_lista
+
+def ingresar_prediccion(jugador: str, numero_bazas: int) -> "dict[str:int]":
+    """ Dado un jugador y la cantidad de bazas que se va a jugar, se solicita
+        al usuario el ingreso de su prediccion. Se impide que la prediccion supere
+        la cantidad de bazas. """
+
+    jugador_prediccion = dict()
+    condicion = True
+    while condicion:
+        try:
+            prediccion = int(input(f"{jugador}, cuantas bazas cree que ganará?: "))
+            # Hay que corroborar que se ingrese un número Y que se encuentre en el rango.
+            if prediccion >= 0 and prediccion <= numero_bazas:
+                jugador_prediccion[jugador] = prediccion
+                condicion = False
+            else: print("El número excede la cantidad de bazas posible")
+        except ValueError:
+            print("Debe ingresar un número")
+    return jugador_prediccion
+
+def ingresar_jugada(jugador: str, cartas_jugador: "list[tuple]") -> None:
+    print(f"Turno de {jugador}")
+    imprimir_mazo(cartas_jugador, True)
+    jugada = int(input("Qué carta desea jugar?: "))
+    # Corroborar jugada
+
+def whist(jugadores: "list[str]"):
+    # Herramientas funcionales: lambda, map y filter. También está reduce pero con importación.
+    BAZAS_POR_MANO = [i+1 for i in range(8)] + [i for i in range(8, 0, -1)]
+    mazo_ordenado_prueba = [('2', '♥️'), ('7', '♦️'), ('9', '♠️'), ('A', '♣️'), \
+        ('3', '♥️'), ('10', '♦️'), ('3', '♠️'), ('K', '♣️')]
+    puntos_juego = dict.fromkeys(jugadores, 0)
+    # for turno in BAZAS_POR_MANO:
+    numero_bazas = 8
+    for baza in range(numero_bazas):
+        cartas_en_posesion, triunfo = repartir_cartas(jugadores, numero_bazas)
+        mano = (baza, cartas_en_posesion, triunfo)
+        predicciones = obtener_predicciones(mano, jugadores)
+        puntos_mano = jugar_baza(jugadores, mano, predicciones)
+        for jugador in puntos_juego.keys():
+            puntos_juego[jugador] += puntos_mano[jugador]
+        # Rotar lista de jugadores
+        
+    for baza in range(8, 0, -1):
+        cartas_en_juego, triunfo = repartir_cartas(jugadores, baza)
+        # Prediccion de cada jugador
+        # Jugar baza
+        # Rotar lista de jugadores
+        pass
+    pass
+
+def repartir_cartas(jugadores: "list[str]", numero_bazas: int) -> "tuple[dict, set]":
+    """ Dada una lista de jugadores y la cantidad de bazas que se juega,
+        se le reparten la cantidad de cartas correspondiente a cada jugador y
+        se devuelve el triunfo de la baza. """
+    
+    PALOS = {'♥️', '♦️', '♠️', '♣️'}
+    VALORES = [str(i+1) for i in range(1, 10)] + ['J', 'Q', 'K', 'A']
+    mazo = {(x, y) for x in VALORES for y in PALOS}
+    cartas_en_posesion = dict.fromkeys(mazo, None)
+
+    for jugador in enumerate(jugadores):
+        for numero_carta in range(numero_bazas):
+            carta = random.choice(list(mazo))
+            mazo.remove(carta)
+            cartas_en_posesion[carta] = jugador[1]
+    triunfo = random.choice(list(mazo))
+    return cartas_en_posesion, triunfo
+
+def obtener_predicciones(mano: "tuple[int, dict, tuple]", jugadores: "list[str]") -> "dict[str:int]":
+    numero_bazas, cartas_en_posesion, triunfo = mano
+    predicciones_mano = dict()
+    for numero, jugador in enumerate(jugadores):
+        if numero != 0:
+            imprimir_predicciones(predicciones_mano)
+        cartas_jugador = {carta for carta, nombre in cartas_en_posesion.items() \
+            if nombre == jugador}
+        imprimir_triunfo_palo(triunfo, None)
+        imprimir_mazo([triunfo], False)
+        print(f"Cartas de {jugador}:")
+        imprimir_mazo(cartas_jugador, True) # imprimir_mazo(ordenar_cartas_por_palo(cartas_jugador))
+        predicciones_mano.update(ingresar_prediccion(jugador, numero_bazas))
+        if numero != len(jugadores)-1:
+            input(f"Entregue la computadora a {jugadores[numero+1]}. ")
+        clear()
+    return predicciones_mano
+
+def jugar_baza(jugadores: "list[str]", mano: "tuple[int, dict[tuple:str], tuple[str, str]]", \
+    predicciones: "dict[str:int]") -> "dict[str:int]":
+    numero_bazas, cartas_en_posesion, triunfo = mano
+    # mesa = list()
+    for numero, jugador in enumerate(jugadores):
+        # Mostrar cartas en la mesa y las del jugador
+        cartas_jugador = [carta for carta, nombre in cartas_en_posesion.items() \
+            if nombre == jugador]
+        if numero == 0:
+            palo = ingresar_jugada(jugador, cartas_jugador)
+        imprimir_triunfo_palo(triunfo, palo)
+        imprimir_mazo(list(), False)
+        jugada = ingresar_jugada(jugador, cartas_jugador) # Esta funcion debe corroborar que la jugada sea correcta
+        # baza = 
+        pass
+
+# ------------------
+def ordenar_cartas_por_palo(cartas: "set[tuple]") -> "list[tuple]":
+    """ Algoritmo para ordenar cartas, seguramente lo más complicado de todo
+        este programa, no estaría mal revisarlo luego. """
+    
+    PALOS = {'♥️', '♦️', '♠️', '♣️'}
+    NUMEROS = [str(i+1) for i in range(1, 10)] + ['J', 'Q', 'K', 'A']
+    numeros_con_valor = enumerate(NUMEROS)
+    lista_ordenada = list()
+    for palo in PALOS:
+        lista_ordenada_palos = list()
+        for carta in cartas:
+            if carta[1] == palo:
+                # Añadir a lista de forma ordenada
+                pass
+        lista_ordenada.append(lista_ordenada_palos)
+    return lista_ordenada
+
+def ordenar_cartas_mismo_palo(lista, valor):
+    NUMEROS = [str(i+1) for i in range(1, 10)] + ['J', 'Q', 'K', 'A']
+    resultado = list()
+    for carta in enumerate(lista):
+        index_carta = NUMEROS.index(carta[0])
+        index_nueva_carta = NUMEROS.index(valor[0])
+        if index_nueva_carta > index_carta:
+            resultado = lista[:lista[0]] + valor + lista[lista[0]+1:]
+        else: resultado.insert(0, valor)
+    pass
+
+def obtener_predicciones_deprecated(jugadores: "list[str]") -> dict:
+    predicciones = dict()
+    for jugador in jugadores:
+        prediccion = input(f"{jugador}, cuantas bazas cree que ganará?: ")
+        predicciones[jugador] = prediccion
+    return predicciones  
+# ------------------
+
+def main():
+    clear()
+    # jugadores = ingresar_jugadores()
+    jugadores = ["Luca", "Marco", "Omar", "Gisela"]
+    resultado = whist(jugadores)
+    imprimir_resultado(resultado)
+
+if __name__ == "__main__":
+    main()
