@@ -1,68 +1,24 @@
-import random
 # import collections, functools, operator
 from impresion import *
-
-def ingresar_jugadores():
-    """ Se solicita al usuario inicial que ingrese los nombres de los jugadores separados por
-        coma. La cantidad mínima es 3, y la máxima 7. """
-
-    condicion = True
-    while condicion:
-        jugadores_str = input("Ingrese los nombres de los jugadores separados por coma: ")
-        jugadores_lista = jugadores_str.split(',')
-        if len(jugadores_lista) < 3 or len(jugadores_lista) > 7:
-            print("La cantidad de jugadores no es correcta, vuelva a intentarlo.")
-        else: 
-            random.shuffle(jugadores_lista)
-            condicion = False
-    return jugadores_lista
-
-def ingresar_prediccion(jugador: str, numero_bazas: int) -> "dict[str:int]":
-    """ Dado un jugador y la cantidad de bazas que se va a jugar, se solicita
-        al usuario el ingreso de su prediccion. Se impide que la prediccion supere
-        la cantidad de bazas. """
-
-    jugador_prediccion = dict()
-    condicion = True
-    while condicion:
-        try:
-            prediccion = int(input(f"{jugador}, cuantas bazas cree que ganará?: "))
-            # Hay que corroborar que se ingrese un número Y que se encuentre en el rango.
-            if prediccion >= 0 and prediccion <= numero_bazas:
-                jugador_prediccion[jugador] = prediccion
-                condicion = False
-            else: print("El número excede la cantidad de bazas posible")
-        except ValueError:
-            print("Debe ingresar un número")
-    return jugador_prediccion
-
-def ingresar_jugada(jugador: str, cartas_jugador: "list[tuple]", \
-        palo_baza_carta: "tuple[str, str]", triunfo: "tuple[str, str]") -> "tuple[str, str]":
-    # print(f"Turno de {jugador}")
-    # imprimir_mazo(cartas_jugador, True)
-    condicion = True
-    while condicion:
-        try: 
-            jugada = int(input(f"{jugador}, qué carta desea jugar?: "))
-            condicion = False
-            # Corroborar jugada
-        except ValueError:
-            print("Debe ingresar un número")
-    return cartas_jugador[jugada-1]
+from entrada import *
 
 def whist(jugadores: "list[str]"):
     # Herramientas funcionales: lambda, map y filter. También está reduce pero con importación.
     BAZAS_POR_MANO = [i+1 for i in range(8)] + [i for i in range(8, 0, -1)]
     puntos_juego = dict.fromkeys(jugadores, 0)
+    imprimir_inicio_juego(jugadores)
     for mano in BAZAS_POR_MANO:
+        imprimir_inicio_mano(mano, jugadores[0])
         cartas_en_posesion, triunfo = repartir_cartas(jugadores, mano)
         datos_mano = (mano, cartas_en_posesion, triunfo)
         predicciones = obtener_predicciones(datos_mano, jugadores)
         puntos_mano = jugar_mano(jugadores, datos_mano, predicciones)
         for jugador in puntos_juego.keys():
             puntos_juego[jugador] += puntos_mano[jugador]
-        imprimir_puntaje(puntos_mano, puntos_juego)
+        imprimir_puntaje_mano(puntos_mano, puntos_juego)
         jugadores = jugadores[1:] + [jugadores[0]] # Rotar lista de jugadores
+    imprimir_resultado_juego(puntos_juego)
+    determinar_ganador_juego(puntos_juego)
     return puntos_juego
 
 def repartir_cartas(jugadores: "list[str]", numero_bazas: int) -> "tuple[dict, set]":
@@ -92,21 +48,18 @@ def obtener_predicciones(mano: "tuple[int, dict, tuple]", jugadores: "list[str]"
     numero_bazas, cartas_en_posesion, triunfo = mano
     predicciones_mano = dict()
     for numero, jugador in enumerate(jugadores):
-        if numero != 0:
-            imprimir_predicciones(predicciones_mano)
         cartas_jugador = {carta for carta, nombre in cartas_en_posesion.items() \
             if nombre == jugador}
-        baza = (None, None, jugador, cartas_jugador) # palo_baza, mesa, jugador, cartas_jugador
-        mano = (numero_bazas, triunfo)
-        imprimir_mazos_principales(mano, baza, jugadores)
+        imprimir_canto_predicciones(triunfo, jugador, cartas_jugador, predicciones_mano)
         predicciones_mano.update(ingresar_prediccion(jugador, numero_bazas))
         if numero == len(jugadores)-1:
-            input(f"\nEntregue la computadora a {jugadores[0]}. ")
-        else: input(f"\nEntregue la computadora a {jugadores[numero+1]}. ")
+            imprimir_transicion(jugadores[0])
+        else: imprimir_transicion(jugadores[numero+1])
     return predicciones_mano
 
-def jugar_mano(jugadores: "list[str]", mano: "tuple[int, dict[tuple:str], tuple[str, str]]", \
-        predicciones: "dict[str:int]") -> "dict[str:int]":
+def jugar_mano(jugadores: "list[str]", mano: "tuple[int, dict, tuple]", 
+               predicciones: "dict[str:int]") -> "dict[str:int]":
+    
     bazas_ganadas = dict.fromkeys(jugadores, 0)
     numero_bazas, cartas_en_posesion, triunfo = mano
     for baza in range(numero_bazas):
@@ -115,13 +68,10 @@ def jugar_mano(jugadores: "list[str]", mano: "tuple[int, dict[tuple:str], tuple[
         for numero, jugador in enumerate(jugadores):
             cartas_jugador = [carta for carta, nombre in cartas_en_posesion.items() \
                 if nombre == jugador]
-            baza = (palo_baza, mesa, jugador, cartas_jugador)
-            mano = (numero_bazas, triunfo)
-            imprimir_mazos_principales(mano, baza, jugadores)
+            imprimir_seleccion_carta(triunfo, mesa, jugador, cartas_jugador)
             jugada = ingresar_jugada(jugador, cartas_jugador, palo_baza, triunfo)
-            # Esta funcion debe corroborar que la jugada sea correcta
             if numero != len(jugadores)-1:
-                input(f"\nEntregue la computadora a {jugadores[numero+1]}. ")
+                imprimir_transicion(jugadores[numero+1])
             if numero == 0:
                 palo_baza = jugada
             cartas_en_posesion[jugada] = None
@@ -129,7 +79,9 @@ def jugar_mano(jugadores: "list[str]", mano: "tuple[int, dict[tuple:str], tuple[
         ganador_baza = determinar_ganador_baza(mesa, palo_baza, triunfo)
         bazas_ganadas[ganador_baza] += 1
         jugadores = actualizar_orden_jugadores(jugadores, ganador_baza)
-        imprimir_ganador_baza(ganador_baza, triunfo, mesa)
+        imprimir_ganador_baza(triunfo, mesa, ganador_baza)
+        if baza < numero_bazas-1:
+            imprimir_transicion(jugadores[0])
 
     puntos_mano = determinar_puntos_mano(bazas_ganadas, predicciones)
     return puntos_mano
@@ -163,6 +115,11 @@ def determinar_puntos_mano(bazas_ganadas: "dict[str:int]", predicciones: "dict[s
             puntos_mano[jugador] = 10 + bazas_ganadas[jugador]
         else: puntos_mano[jugador] = bazas_ganadas[jugador]
     return puntos_mano
+
+def determinar_ganador_juego(puntaje_juego: dict) -> tuple:
+    mayor_puntaje = max(puntaje_juego.values())
+    ganador_es = [jugador for jugador, puntaje in puntaje_juego if puntaje == mayor_puntaje]
+    return (ganador_es, mayor_puntaje)
 
 # ------------------
 def ordenar_cartas_por_palo(cartas: "set[tuple]") -> "list[tuple]":
@@ -199,7 +156,10 @@ def main():
     # jugadores = ingresar_jugadores()
     jugadores = ["Luca", "Marco", "Omar", "Gisela"]
     resultado = whist(jugadores)
-    imprimir_resultado(resultado)
+    if len(resultado[0]) == 1:
+        imprimir_ganador(resultado)
+    else:
+        imprimir_empate(resultado)
 
 if __name__ == "__main__":
     main()

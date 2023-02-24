@@ -5,93 +5,117 @@ def clear() -> None:
 
     print("\033[H\033[J", end="")
 
-def imprimir_triunfo_palo(triunfo: "tuple[str, str]", palo: "tuple[str, str]") -> None:
-    if palo:
+def imprimir_mazo(lista_de_cartas: "list[tuple[chr, chr]]", enumerado: bool) -> None:
+    """ Esta función imprime en pantalla horizontalmente una lista de cartas.
+        Acepta como parámetro si se encuentra enumerada.  """
+    
+    # [xG: desplazar el cursor x columnas
+    # [xA: ascender el cursor x filas 
+    # [xB: descender el cursor x filas
+
+    nro_columnas = 1
+    nro_carta = 1
+    for carta in lista_de_cartas:
+        if carta[0] != "10":
+            print(
+                f"\033[{nro_columnas}G┌─────┐\n" 
+                f"\033[{nro_columnas}G│{carta[0]}    │\n"
+                f"\033[{nro_columnas}G│  {carta[1]}  │\n"
+                f"\033[{nro_columnas}G│    {carta[0]}│\n"
+                f"\033[{nro_columnas}G└─────┘")
+        else: 
+            print(
+                f"\033[{nro_columnas}G┌─────┐\n" 
+                f"\033[{nro_columnas}G│10   │\n"
+                f"\033[{nro_columnas}G│  {carta[1]}  │\n"
+                f"\033[{nro_columnas}G│   10│\n"
+                f"\033[{nro_columnas}G└─────┘")
+        if enumerado:
+            print(f"\033[{nro_columnas}G   {nro_carta}\t")
+            print("\033[7A")
+        else:
+            print("\033[6A")
+        nro_columnas += 8
+        nro_carta += 1
+    if enumerado:
+        print("\033[6B")
+    else:
+        print("\033[5B")
+
+def imprimir_inicio_juego(jugadores: "list[str]") -> None:
+    input("Bienvenidos al Whist, esperamos que disfruten del juego.")
+    input(f"El orden de los jugadores es: {jugadores}.")
+    input("Empieza el juego.")
+
+def imprimir_inicio_mano(numero_mano: int, jugador: str) -> None:
+    clear()
+    input(f"Comienza la mano de {numero_mano}. Ahora es el turno de {jugador}.")
+    clear()
+    input(f"Turno de {jugador}. Presione Enter cuando tenga el dispositivo en mano.")
+
+def imprimir_transicion(jugador: str):
+    input(f"Entregue la computadora a {jugador}.")
+    clear()
+    input(f"Turno de {jugador}. Presione Enter cuando tenga el dispositivo en mano.")
+    clear()
+
+def imprimir_canto_predicciones(triunfo: "tuple[chr, chr]", jugador: str, 
+                                cartas_jugador: "list[tuple[chr, chr]]", 
+                                predicciones_previas: "dict[str:int]") -> None:
+
+    # numero_bazas, triunfo, jugador, cartas_jugador, predicciones
+    print(f"Carta triunfo de la mano actual:")
+    imprimir_mazo([triunfo], False)
+    print(f"Cartas de {jugador}:")
+    imprimir_mazo(cartas_jugador, True)
+    if predicciones_previas:
+        print(f"Prediccion de cada jugador (nombre, predicción): {predicciones_previas}")
+
+def imprimir_seleccion_carta(triunfo: "tuple[chr, chr]", mesa: "dict[tuple:str]", 
+                             jugador: str, cartas_jugador: "list[tuple]") -> None:
+
+    # numero_bazas, triunfo, jugador, cartas_jugador, mesa, palo, jugadores_previos
+    print(f"Carta triunfo de la mano actual:")
+    imprimir_mazo([triunfo], False)
+    if mesa:
+        jugadores_previos = list(mesa.values())
+        palo = (list(mesa.keys()))[0]
+        print("Mesa:")
+        imprimir_mazo(mesa, False)
+    print(f"Cartas de {jugador}:")
+    imprimir_mazo(cartas_jugador, True)
+    if mesa:
+        print(f"Las cartas en la mesa fueron jugadas por: {jugadores_previos}")
         print(f"El triunfo de esta mano es '{triunfo[1]}', y el palo de la baza es '{palo[1]}'.")
     else:
         print(f"El triunfo de esta mano es '{triunfo[1]}'.")
 
-def imprimir_mazo(mazo: "list[tuple]", enumerado: bool) -> None:
-    """ Dada una lista de cartas recorre 3 veces la misma para permitir mostrarlas
-        en serie en la terminal.  """
-    tamaño = len(mazo)
-    print("┌─────┐ "*tamaño)
-    for carta in mazo:
-        if carta[0] == "10": 
-            print(f"│{carta[0]}   │ ", end='')
-        else: print(f"│{carta[0]}    │ ", end='')
-    print('')
-    for carta in mazo:
-        print(f"│  {carta[1]}  │ ", end='')
-    print('')
-    for carta in mazo:
-        if carta[0] == "10":
-            print(f"│   {carta[0]}│ ", end='')
-        else: print(f"│    {carta[0]}│ ", end='')
-    print('')
-    print("└─────┘ "*tamaño)
-    if enumerado:
-        for i in range(tamaño):
-            print(f"   {i+1}\t", end='')
-        print("\n")
-    # \033[F
-    # \033[A
+def imprimir_ganador_baza(triunfo: "tuple[chr, chr]", mesa: "dict[tuple:str]", ganador: str) -> None:
 
-def imprimir_predicciones(predicciones: dict) -> None:
-    for jugador, prediccion in predicciones.items():
-        print(f"{jugador} dijo {prediccion}")
-
-def imprimir_ganador_baza(ganador: str, triunfo: "tuple[str, str]", \
-        mesa: "dict[tuple:str]") -> None:
+    # triunfo, mesa, jugadores_en_orden, ganador
     clear()
-    print(f"Carta triunfo:")
+    jugadores_orden = list(mesa.values())
+    print("Carta triunfo:")
     imprimir_mazo([triunfo], False)
-    print(f"Las cartas en la mesa fueron jugadas por: {list(mesa.values())}")
-    imprimir_mazo(list(mesa), False)
-    print(f"La baza la ganó {ganador}")
-    input("")
-
-def imprimir_puntaje(puntos_mano, puntos_juego) -> None:
-    print(f"El puntaje de esta mano fue: {puntos_mano}")
-    print(f"Puntaje de cada jugador: {puntos_juego}")
-    input()
-
-def imprimir_mazos_principales(mano, baza, jugadores) -> None:
-    numero_bazas, triunfo = mano
-    palo_baza, mesa, jugador, cartas_jugador = baza
-    clear()
-    if jugadores:
-        print(f"El orden de los jugadores es: {jugadores}")
-    print(f"Carta triunfo de la mano N°{numero_bazas}:")
-    imprimir_mazo([triunfo], False)
-    if mesa:
-        print("Mesa:")
-        imprimir_mazo(list(mesa), False)
-    print(f"Cartas de {jugador}:")
-    imprimir_mazo(cartas_jugador, True) # imprimir_mazo(ordenar_cartas_por_palo(cartas_jugador))
-    if mesa:
-        print(f"Las cartas en la mesa fueron jugadas por: {list(mesa.values())}")
-    imprimir_triunfo_palo(triunfo, palo_baza)
-
-def imprimir_resultado(resultado: str):
-    pass
-
-# ---------------------------
-
-def imprimir_mazo_deprecated(mazo: set) -> None:
-    for carta in mazo:
-        imprimir_carta_deprecated(carta)
+    print("Mesa:")
+    imprimir_mazo(mesa, False)
+    input(f"Las cartas en la mesa fueron jugadas por: {jugadores_orden}\n\n"
+          f"La baza la ganó {ganador}.")
     
-def imprimir_carta_deprecated(carta: tuple) -> None:
-    print("┌─────┐")
-    if carta[0] == "10":
-        print(f"│{carta[0]}   │")
-        print(f"│  {carta[1]}  │")
-        print(f"│   {carta[0]}│")
-    else:
-        print(f"│{carta[0]}    │")
-        print(f"│  {carta[1]}  │")
-        print(f"│    {carta[0]}│")
-    print("└─────┘")
+def imprimir_puntaje_mano(puntaje_mano: dict, puntaje_juego: dict) -> None:
+    input(f"El puntaje de esta mano fue: {puntaje_mano}\n"
+          f"Puntaje de cada jugador: {puntaje_juego}")
 
-# ---------------------------
+def imprimir_resultado_juego(puntaje_final: str):
+    print("Ha finalizado el juego, los puntajes de cada jugador son:\n\n"
+          f"{puntaje_final}")
+    
+def imprimir_ganador(resultado: tuple) -> None:
+    ganador = resultado[0][0]
+    puntaje = resultado[1]
+    print(f"Ha ganado {ganador} con {puntaje} puntos, felicitaciones! 🥳🎉")
+
+def imprimir_empate(resultado: tuple) -> None:
+    ganadores = resultado[0]
+    puntaje = resultado[1]
+    print(f"Los ganadores fueron {ganadores} con {puntaje} puntos, felicitaciones! 🥳🎉")
