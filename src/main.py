@@ -18,8 +18,8 @@ def whist(jugadores: "list[str]"):
         imprimir_puntaje_mano(puntos_mano, puntos_juego)
         jugadores = jugadores[1:] + [jugadores[0]] # Rotar lista de jugadores
     imprimir_resultado_juego(puntos_juego)
-    determinar_ganador_juego(puntos_juego)
-    return puntos_juego
+    ganador_es = determinar_ganador_juego(puntos_juego)
+    return ganador_es
 
 def repartir_cartas(jugadores: "list[str]", numero_bazas: int) -> "tuple[dict, set]":
     """ Dada una lista de jugadores y la cantidad de bazas que se juega,
