@@ -81,7 +81,7 @@ def corroborar_jugada(cartas_jugador: "list[tuple]", jugada: int,
         print(f"Seleccionó una carta con un palo distinto al de la baza teniendo "
               f"al menos una carta con dicho palo ('{palo_baza}').")
         print("Debe seleccionar alguna de sus cartas con el palo de la baza.\n"
-              f"Las que cumplen con la condición son las numero {palos_baza_disponibles}")
+              f"Las que cumplen con la condición son las numero {palos_baza_disponibles}.")
     else:
         print(f"Seleccionó una carta con un palo distinto al de triunfo teniendo "
               f"al menos una carta con dicho palo ('{palo_triunfo}').")
