@@ -76,6 +76,10 @@ def jugar_mano(jugadores: "list[str]", mano: "tuple[int, dict, tuple]",
                 palo_baza = jugada
             cartas_en_posesion[jugada] = None
             mesa[jugada] = jugador
+        # mesa = {('4', '♠️'):"Luca", ('7', '♥️'):"Marco", ('8', '♠️'):"Omar", ('4', '♥️'):"Gisela"}
+        # triunfo = ('8', '♥️')
+        # palo_baza = ('4', '♠️')
+
         ganador_baza = determinar_ganador_baza(mesa, palo_baza, triunfo)
         bazas_ganadas[ganador_baza] += 1
         jugadores = actualizar_orden_jugadores(jugadores, ganador_baza)
@@ -94,11 +98,13 @@ def determinar_ganador_baza(mesa: "dict[tuple:str]", palo_baza_carta: "tuple[str
     palo_baza = palo_baza_carta[1]
     ganador = palo_baza_carta
     for carta in mesa.keys():
-        if carta[1] == palo_triunfo and ganador[1] != palo_triunfo:
-            ganador = carta
-        elif carta[1] == palo_triunfo and VALORES.index(carta[0]) > VALORES.index(ganador[0]):
-            ganador = carta
-        elif carta[1] == palo_baza and VALORES.index(carta[0]) > VALORES.index(ganador[0]):
+        if carta[1] == palo_triunfo and\
+                       (ganador[1] != palo_triunfo or\
+                        VALORES.index(carta[0]) > VALORES.index(ganador[0])):
+                ganador = carta
+        if carta[1] == palo_baza and\
+                       ganador[1] != palo_triunfo and\
+                       VALORES.index(carta[0]) > VALORES.index(ganador[0]):
             ganador = carta
     jugador_ganador = mesa[ganador]
     return jugador_ganador
