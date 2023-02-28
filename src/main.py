@@ -139,8 +139,8 @@ def determinar_ganador_juego(puntaje_juego: dict) -> tuple:
 
 def main():
     clear()
-    # jugadores = ingresar_jugadores()
-    jugadores = ["Luca", "Marco", "Omar", "Gisela"]
+    jugadores = ingresar_jugadores()
+    # jugadores = ["Luca", "Marco", "Omar", "Gisela"]
     resultado = whist(jugadores)
     if len(resultado[0]) == 1:
         imprimir_ganador(resultado)

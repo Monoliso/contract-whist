@@ -13,7 +13,7 @@ def ingresar_jugadores():
         jugadores = [jugador.replace(' ', '') for jugador in jugadores_lista]
         if len(jugadores) < 3 or len(jugadores) > 7:
             print("La cantidad de jugadores no es correcta, debe ser de 3 a 7 jugadores."
-                  " Vuelva a intentarlo")
+                  " Vuelva a intentarlo.")
         else: 
             random.shuffle(jugadores)
             condicion = False
@@ -38,11 +38,11 @@ def ingresar_prediccion(jugador: str, numero_bazas: int) -> "dict[str:int]":
             print("Debe ingresar un número")
     return jugador_prediccion
 
-def ingresar_jugada(jugador: str, cartas_jugador: "list[tuple]", 
+def ingresar_jugada(jugador: str, cartas_jugador: "list[tuple]",
                     palo_baza: tuple, triunfo: tuple) -> "tuple[str, str]":
     condicion = True
     while condicion:
-        try: 
+        try:
             jugada = int(input(f"\n{jugador}, qué carta desea jugar?: "))
             if (jugada > (largo:=len(cartas_jugador)) or jugada <= 0):
                 input(f"Debe seleccionar una carta dentro del rango 1-{largo}.")
@@ -54,7 +54,7 @@ def ingresar_jugada(jugador: str, cartas_jugador: "list[tuple]",
             input("Debe ingresar un número.")
     return cartas_jugador[jugada-1]
 
-def corroborar_jugada(cartas_jugador: "list[tuple]", jugada: int, 
+def corroborar_jugada(cartas_jugador: "list[tuple]", jugada: int,
                       palo_baza: str, palo_triunfo: str) -> bool:
     
     carta_seleccionada = cartas_jugador[jugada-1]
@@ -63,7 +63,6 @@ def corroborar_jugada(cartas_jugador: "list[tuple]", jugada: int,
     tiene_triunfo = False
     palos_baza_disponibles: list[int] = list()
     palos_triunfo_disponibles: list[int] = list()
-    
     if palo_carta == palo_baza:
         return True
     for numero, carta in enumerate(cartas_jugador):
@@ -77,7 +76,6 @@ def corroborar_jugada(cartas_jugador: "list[tuple]", jugada: int,
         return True
     if not tiene_palo and not tiene_triunfo:
         return True
-    
     if tiene_palo:
         print(f"Seleccionó una carta con un palo distinto al de la baza teniendo "
               f"al menos una carta con dicho palo ('{palo_baza}').")

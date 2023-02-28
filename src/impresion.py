@@ -43,7 +43,7 @@ def imprimir_mazo(lista_de_cartas: "list[tuple[str, str]]", enumerado: bool) -> 
         print("\033[5B")
 
 def imprimir_inicio_juego(jugadores: "list[str]") -> None:
-    input("Bienvenidos al Whist, esperamos que disfruten del juego.")
+    input("\nBienvenidos al Whist, esperamos que disfruten del juego.")
     input(f"El orden de los jugadores es: {jugadores}.")
     input("Empieza el juego.")
 
