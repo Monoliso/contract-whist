@@ -2,7 +2,10 @@
 from impresion import *
 from entrada import *
 
-def whist(jugadores: "list[str]"):
+def whist(jugadores: "list[str]") -> tuple:
+    """ Permite jugar una partida de Whist. Maneja la entrada y salida del juego.
+        Devuelve una tupla con los ganadores y el puntaje con el que ganaron.   """
+
     # Herramientas funcionales: lambda, map y filter. También está reduce pero con importación.
     BAZAS_POR_MANO = [i+1 for i in range(8)] + [i for i in range(8, 0, -1)]
     puntos_juego = dict.fromkeys(jugadores, 0)
@@ -28,8 +31,8 @@ def repartir_cartas(jugadores: "list[str]", numero_bazas: int) -> "tuple[dict, s
     
     PALOS = {'♥️', '♦️', '♠️', '♣️'}
     VALORES = [str(i+1) for i in range(1, 10)] + ['J', 'Q', 'K', 'A']
-    mazo = {(x, y) for x in VALORES for y in PALOS}
-    cartas_en_posesion = dict.fromkeys(mazo, None)
+    cartas_en_posesion = {(x, y):None for y in PALOS for x in VALORES}
+    mazo = set(cartas_en_posesion.keys())
 
     for jugador in enumerate(jugadores):
         for numero_carta in range(numero_bazas):
@@ -48,8 +51,8 @@ def obtener_predicciones(mano: "tuple[int, dict, tuple]", jugadores: "list[str]"
     numero_bazas, cartas_en_posesion, triunfo = mano
     predicciones_mano = dict()
     for numero, jugador in enumerate(jugadores):
-        cartas_jugador = {carta for carta, nombre in cartas_en_posesion.items() \
-            if nombre == jugador}
+        cartas_jugador = [carta for carta, nombre in cartas_en_posesion.items() \
+            if nombre == jugador]
         imprimir_canto_predicciones(triunfo, jugador, cartas_jugador, predicciones_mano)
         predicciones_mano.update(ingresar_prediccion(jugador, numero_bazas))
         if numero == len(jugadores)-1:
@@ -59,6 +62,8 @@ def obtener_predicciones(mano: "tuple[int, dict, tuple]", jugadores: "list[str]"
 
 def jugar_mano(jugadores: "list[str]", mano: "tuple[int, dict, tuple]", 
                predicciones: "dict[str:int]") -> "dict[str:int]":
+    """ Permite jugar una mano del juego. Maneja la entrada y la salida al usuario.
+        Devuelve los puntos que se realizaron en la mano. """
     
     bazas_ganadas = dict.fromkeys(jugadores, 0)
     numero_bazas, cartas_en_posesion, triunfo = mano
@@ -76,9 +81,6 @@ def jugar_mano(jugadores: "list[str]", mano: "tuple[int, dict, tuple]",
                 palo_baza = jugada
             cartas_en_posesion[jugada] = None
             mesa[jugada] = jugador
-        # mesa = {('4', '♠️'):"Luca", ('7', '♥️'):"Marco", ('8', '♠️'):"Omar", ('4', '♥️'):"Gisela"}
-        # triunfo = ('8', '♥️')
-        # palo_baza = ('4', '♠️')
 
         ganador_baza = determinar_ganador_baza(mesa, palo_baza, triunfo)
         bazas_ganadas[ganador_baza] += 1
@@ -92,6 +94,7 @@ def jugar_mano(jugadores: "list[str]", mano: "tuple[int, dict, tuple]",
 
 def determinar_ganador_baza(mesa: "dict[tuple:str]", palo_baza_carta: "tuple[str, str]", \
         triunfo: "tuple[str, str]") -> str:
+    """ Devuelve el jugador que ganó la baza. """
 
     VALORES = [str(i+1) for i in range(1, 10)] + ['J', 'Q', 'K', 'A']
     palo_triunfo = triunfo[1]
@@ -110,11 +113,16 @@ def determinar_ganador_baza(mesa: "dict[tuple:str]", palo_baza_carta: "tuple[str
     return jugador_ganador
 
 def actualizar_orden_jugadores(jugadores: "list[str]", ganador_baza: str) -> "list[str]":
+    """ Devuelve una lista con el orden actualizado de los jugadores en una mano. """
+    
     numero_ganador = jugadores.index(ganador_baza)
     nueva_lista = jugadores[numero_ganador:] + jugadores[:numero_ganador]
     return nueva_lista
 
 def determinar_puntos_mano(bazas_ganadas: "dict[str:int]", predicciones: "dict[str:int]"):
+    """ Computa si las bazas ganadas coinciden con la predicción. Devuelve los puntos 
+        finales de la mano. """
+    
     puntos_mano = dict()
     for jugador, prediccion in predicciones.items():
         if bazas_ganadas[jugador] == prediccion:
@@ -123,39 +131,11 @@ def determinar_puntos_mano(bazas_ganadas: "dict[str:int]", predicciones: "dict[s
     return puntos_mano
 
 def determinar_ganador_juego(puntaje_juego: dict) -> tuple:
+    """ Devuelve el o los jugadores con mayor puntaje. """
+    
     mayor_puntaje = max(puntaje_juego.values())
     ganador_es = [jugador for jugador, puntaje in puntaje_juego if puntaje == mayor_puntaje]
     return (ganador_es, mayor_puntaje)
-
-# ------------------
-def ordenar_cartas_por_palo(cartas: "set[tuple]") -> "list[tuple]":
-    """ Algoritmo para ordenar cartas, seguramente lo más complicado de todo
-        este programa, no estaría mal revisarlo luego. """
-    
-    PALOS = {'♥️', '♦️', '♠️', '♣️'}
-    NUMEROS = [str(i+1) for i in range(1, 10)] + ['J', 'Q', 'K', 'A']
-    numeros_con_valor = enumerate(NUMEROS)
-    lista_ordenada = list()
-    for palo in PALOS:
-        lista_ordenada_palos = list()
-        for carta in cartas:
-            if carta[1] == palo:
-                # Añadir a lista de forma ordenada
-                pass
-        lista_ordenada.append(lista_ordenada_palos)
-    return lista_ordenada
-
-def ordenar_cartas_mismo_palo(lista, valor):
-    NUMEROS = [str(i+1) for i in range(1, 10)] + ['J', 'Q', 'K', 'A']
-    resultado = list()
-    for carta in enumerate(lista):
-        index_carta = NUMEROS.index(carta[0])
-        index_nueva_carta = NUMEROS.index(valor[0])
-        if index_nueva_carta > index_carta:
-            resultado = lista[:lista[0]] + valor + lista[lista[0]+1:]
-        else: resultado.insert(0, valor)
-    pass
-# ------------------
 
 def main():
     clear()

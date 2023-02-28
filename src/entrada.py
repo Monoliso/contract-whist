@@ -12,7 +12,8 @@ def ingresar_jugadores():
         jugadores_lista = entrada_usuario.split(',')
         jugadores = [jugador.replace(' ', '') for jugador in jugadores_lista]
         if len(jugadores) < 3 or len(jugadores) > 7:
-            print("La cantidad de jugadores no es correcta, vuelva a intentarlo.")
+            print("La cantidad de jugadores no es correcta, debe ser de 3 a 7 jugadores."
+                  " Vuelva a intentarlo")
         else: 
             random.shuffle(jugadores)
             condicion = False
@@ -50,11 +51,11 @@ def ingresar_jugada(jugador: str, cartas_jugador: "list[tuple]",
             elif corroborar_jugada(cartas_jugador, jugada, palo_baza[1], triunfo[1]):
                 condicion = False
         except ValueError:
-            input("Debe ingresar un número")
+            input("Debe ingresar un número.")
     return cartas_jugador[jugada-1]
 
 def corroborar_jugada(cartas_jugador: "list[tuple]", jugada: int, 
-                      palo_baza: chr, palo_triunfo: chr) -> bool:
+                      palo_baza: str, palo_triunfo: str) -> bool:
     
     carta_seleccionada = cartas_jugador[jugada-1]
     palo_carta = carta_seleccionada[1]

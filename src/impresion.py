@@ -5,7 +5,7 @@ def clear() -> None:
 
     print("\033[H\033[J", end="")
 
-def imprimir_mazo(lista_de_cartas: "list[tuple[chr, chr]]", enumerado: bool) -> None:
+def imprimir_mazo(lista_de_cartas: "list[tuple[str, str]]", enumerado: bool) -> None:
     """ Esta función imprime en pantalla horizontalmente una lista de cartas.
         Acepta como parámetro si se encuentra enumerada.  """
     
@@ -59,11 +59,10 @@ def imprimir_transicion(jugador: str):
     input(f"Turno de {jugador}. Presione Enter cuando tenga el dispositivo en mano.")
     clear()
 
-def imprimir_canto_predicciones(triunfo: "tuple[chr, chr]", jugador: str, 
-                                cartas_jugador: "list[tuple[chr, chr]]", 
+def imprimir_canto_predicciones(triunfo: "tuple[str, str]", jugador: str, 
+                                cartas_jugador: "list[tuple[str, str]]", 
                                 predicciones_previas: "dict[str:int]") -> None:
 
-    # numero_bazas, triunfo, jugador, cartas_jugador, predicciones
     print(f"Carta triunfo de la mano actual:")
     imprimir_mazo([triunfo], False)
     print(f"Cartas de {jugador}:")
@@ -71,10 +70,9 @@ def imprimir_canto_predicciones(triunfo: "tuple[chr, chr]", jugador: str,
     if predicciones_previas:
         print(f"Prediccion de cada jugador (nombre, predicción): {predicciones_previas}")
 
-def imprimir_seleccion_carta(triunfo: "tuple[chr, chr]", mesa: "dict[tuple:str]", 
+def imprimir_seleccion_carta(triunfo: "tuple[str, str]", mesa: "dict[tuple:str]", 
                              jugador: str, cartas_jugador: "list[tuple]") -> None:
 
-    # numero_bazas, triunfo, jugador, cartas_jugador, mesa, palo, jugadores_previos
     print(f"Carta triunfo de la mano actual:")
     imprimir_mazo([triunfo], False)
     if mesa:
@@ -90,9 +88,8 @@ def imprimir_seleccion_carta(triunfo: "tuple[chr, chr]", mesa: "dict[tuple:str]"
     else:
         print(f"El triunfo de esta mano es '{triunfo[1]}'.")
 
-def imprimir_ganador_baza(triunfo: "tuple[chr, chr]", mesa: "dict[tuple:str]", ganador: str) -> None:
+def imprimir_ganador_baza(triunfo: "tuple[str, str]", mesa: "dict[tuple:str]", ganador: str) -> None:
 
-    # triunfo, mesa, jugadores_en_orden, ganador
     clear()
     jugadores_orden = list(mesa.values())
     print("Carta triunfo:")
