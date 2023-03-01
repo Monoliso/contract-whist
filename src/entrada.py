@@ -2,6 +2,7 @@
 
 import random
 
+
 def ingresar_jugadores():
     """ Se solicita al usuario inicial que ingrese los nombres de los jugadores separados por
         coma. La cantidad mínima es 3, y la máxima 7. """
@@ -14,10 +15,11 @@ def ingresar_jugadores():
         if len(jugadores) < 3 or len(jugadores) > 7:
             print("La cantidad de jugadores no es correcta, debe ser de 3 a 7 jugadores."
                   " Vuelva a intentarlo.")
-        else: 
+        else:
             random.shuffle(jugadores)
             condicion = False
     return jugadores
+
 
 def ingresar_prediccion(jugador: str, numero_bazas: int) -> "dict[str:int]":
     """ Dado un jugador y la cantidad de bazas que se va a jugar, se solicita
@@ -38,6 +40,7 @@ def ingresar_prediccion(jugador: str, numero_bazas: int) -> "dict[str:int]":
             print("Debe ingresar un número")
     return jugador_prediccion
 
+
 def ingresar_jugada(jugador: str, cartas_jugador: "list[tuple]",
                     palo_baza: tuple, triunfo: tuple) -> "tuple[str, str]":
     condicion = True
@@ -54,9 +57,10 @@ def ingresar_jugada(jugador: str, cartas_jugador: "list[tuple]",
             input("Debe ingresar un número.")
     return cartas_jugador[jugada-1]
 
+
 def corroborar_jugada(cartas_jugador: "list[tuple]", jugada: int,
                       palo_baza: str, palo_triunfo: str) -> bool:
-    
+
     carta_seleccionada = cartas_jugador[jugada-1]
     palo_carta = carta_seleccionada[1]
     tiene_palo = False
