@@ -64,6 +64,12 @@ def imprimir_transicion(jugador: str):
     clear()
 
 
+def imprimir_opciones_orden() -> None:
+    print("Las opciones para ordenar las cartas son:\n"
+          "\t1 - Por palo.\n"
+          "\t2 - Por valor.\n")
+
+
 def imprimir_canto_predicciones(triunfo: "tuple[str, str]", jugador: str,
                                 cartas_jugador: "list[tuple[str, str]]",
                                 predicciones_previas: "dict[str:int]") -> None:

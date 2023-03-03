@@ -58,6 +58,20 @@ def ingresar_jugada(jugador: str, cartas_jugador: "list[tuple]",
     return cartas_jugador[jugada-1]
 
 
+def ingresar_eleccion_orden(jugador) -> list:
+    condicion = True
+    while condicion:
+        try:
+            eleccion = int(input(f"\n{jugador}, cuál es su elección de ordenamiento?: "))
+            if eleccion != 1 or eleccion != 2:
+                input("Debe ingresar 1 o 2.")
+            else:
+                condicion = False
+        except ValueError:
+            input("Debe ingresar un número.")
+    return eleccion
+        
+
 def corroborar_jugada(cartas_jugador: "list[tuple]", jugada: int,
                       palo_baza: str, palo_triunfo: str) -> bool:
 
