@@ -63,7 +63,7 @@ def ingresar_eleccion_orden(jugador) -> list:
     while condicion:
         try:
             eleccion = int(input(f"\n{jugador}, cuál es su elección de ordenamiento?: "))
-            if eleccion != 1 or eleccion != 2:
+            if eleccion != 1 and eleccion != 2:
                 input("Debe ingresar 1 o 2.")
             else:
                 condicion = False

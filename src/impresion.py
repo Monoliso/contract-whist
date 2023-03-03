@@ -47,7 +47,6 @@ def imprimir_mazo(lista_de_cartas: "list[tuple[str, str]]", enumerado: bool) -> 
 def imprimir_inicio_juego(jugadores: "list[str]") -> None:
     input("\nBienvenidos al Whist, esperamos que disfruten del juego.")
     input(f"El orden de los jugadores es: {jugadores}.")
-    input("Empieza el juego.")
 
 
 def imprimir_inicio_mano(numero_mano: int, jugador: str) -> None:
@@ -57,7 +56,7 @@ def imprimir_inicio_mano(numero_mano: int, jugador: str) -> None:
     input(f"Turno de {jugador}. Presione Enter cuando tenga el dispositivo en mano.")
 
 
-def imprimir_transicion(jugador: str):
+def imprimir_transicion(jugador: str) -> None:
     input(f"Entregue la computadora a {jugador}.")
     clear()
     input(f"Turno de {jugador}. Presione Enter cuando tenga el dispositivo en mano.")
@@ -65,7 +64,7 @@ def imprimir_transicion(jugador: str):
 
 
 def imprimir_opciones_orden() -> None:
-    print("Las opciones para ordenar las cartas son:\n"
+    print("Las opciones para ordenar las cartas son:\n\n"
           "\t1 - Por palo.\n"
           "\t2 - Por valor.\n")
 
@@ -118,7 +117,7 @@ def imprimir_puntaje_mano(puntaje_mano: dict, puntaje_juego: dict) -> None:
           f"Puntaje de cada jugador: {puntaje_juego}")
 
 
-def imprimir_resultado_juego(puntaje_final: str):
+def imprimir_resultado_juego(puntaje_final: str) -> None:
     print("Ha finalizado el juego, los puntajes de cada jugador son:\n\n"
           f"{puntaje_final}")
 
