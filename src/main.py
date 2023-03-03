@@ -203,21 +203,50 @@ def ordenar_cartas_por_palo(mazo_jugador: list, nueva_carta: tuple) -> "list[tup
     # mazo_jugador = [('9', '♦️'), ('6', '♠️'), ('4', '♥️')]
     # nueva_carta = ('8', '♠️')
     
-    mazo_actualizado = list()
-    for posicion, carta in enumerate(mazo_jugador):
-        if PALOS.index(nueva_carta[1]) == PALOS.index(carta[1]):
-            if VALORES.index(nueva_carta[0]) < VALORES.index(carta[0]):
-                mazo_actualizado = mazo_jugador[:posicion] + [nueva_carta] +\
-                                   mazo_jugador[posicion:]
-            else:
-                mazo_actualizado = mazo_jugador[:posicion+1] + [nueva_carta] +\
-                                   mazo_jugador[posicion+1:]
-        elif PALOS.index(nueva_carta[1]) < PALOS.index(carta[1]):
-            mazo_actualizado = mazo_jugador[:posicion] + [nueva_carta] +\
-                               mazo_jugador[posicion:]
-    if not mazo_actualizado:
-        return mazo_jugador + [nueva_carta]
-    return mazo_actualizado
+    # if mazo_jugador == []:
+    #     return [nueva_carta]
+    # if nueva_carta[1] == mazo_jugador[0][1] and\
+    #    VALORES.index(nueva_carta[0]) < VALORES.index(mazo_jugador[0][0]):
+    #    return [nueva_carta] + mazo_jugador
+    # if not tiene_palo(mazo_jugador[1:], nueva_carta[1]):
+    #     return [nueva_carta] + mazo_jugador
+    # else:
+    #     return [mazo_jugador[0]] + ordenar_cartas_por_palo(mazo_jugador[1:], nueva_carta)
+    
+    if mazo_jugador == []:
+        return [nueva_carta]
+    if nueva_carta[1] == mazo_jugador[0][1] and\
+        VALORES.index(nueva_carta[0]) < VALORES.index(mazo_jugador[0][0]):
+        return [nueva_carta] + mazo_jugador
+    if VALORES.index(nueva_carta[1]) < VALORES.index(mazo_jugador[0][1]):
+        return [mazo_jugador[0]] + ordenar_cartas_por_palo(mazo_jugador[1:], nueva_carta)
+    else:
+        return [nueva_carta] + mazo_jugador
+
+
+# def tiene_palo(mazo: list, palo: str) -> bool:
+#     if mazo == []:
+#         return False
+#     if mazo[0][1] == palo:
+#         return True
+#     else:
+#         return tiene_palo(mazo[1:], palo)
+
+#     # mazo_actualizado = list()
+#     # for posicion, carta in enumerate(mazo_jugador):
+#     #     if PALOS.index(nueva_carta[1]) == PALOS.index(carta[1]):
+#     #         if VALORES.index(nueva_carta[0]) < VALORES.index(carta[0]):
+#     #             mazo_actualizado = mazo_jugador[:posicion] + [nueva_carta] +\
+#     #                                mazo_jugador[posicion:]
+#     #         else:
+#     #             mazo_actualizado = mazo_jugador[:posicion+1] + [nueva_carta] +\
+#     #                                mazo_jugador[posicion+1:]
+#     #     # elif PALOS.index(nueva_carta[1]) < PALOS.index(carta[1]):
+#     #     #     mazo_actualizado = mazo_jugador[:posicion] + [nueva_carta] +\
+#     #     #                        mazo_jugador[posicion:]
+#     # if not mazo_actualizado:
+#     #     return mazo_jugador + [nueva_carta]
+#     # return mazo_actualizado
 
 def main():
     clear()
