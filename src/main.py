@@ -2,7 +2,7 @@
 from impresion import *
 from entrada import *
 
-PALOS = ['♥️', '♦️', '♠️', '♣️']
+PALOS = ['♣️', '♥️', '♦️', '♠️']
 VALORES = [str(i+1) for i in range(1, 10)] + ['J', 'Q', 'K', 'A']
 
 
@@ -14,7 +14,6 @@ def whist(orden_jugadores: "list[str]") -> tuple:
     BAZAS_POR_MANO = [i+1 for i in range(8)] + [i for i in range(8, 0, -1)]
     puntos_juego = dict.fromkeys(orden_jugadores, 0)
     imprimir_inicio_juego(orden_jugadores)
-    eleccion_orden = obtener_elecciones_orden(orden_jugadores)
     for mano in BAZAS_POR_MANO:
         imprimir_inicio_mano(mano, orden_jugadores[0])
         cartas_jugadores, triunfo = repartir_cartas(orden_jugadores, mano)
@@ -47,17 +46,6 @@ def repartir_cartas(jugadores: "list[str]", numero_bazas: int) -> "tuple[dict, s
         cartas_jugadores[jugador] = cartas_jugador
     triunfo = random.choice(list(mazo))
     return cartas_jugadores, triunfo
-
-
-def obtener_elecciones_orden(orden_jugadores: list) -> "list[tuple]":
-    elecciones = list()
-    for jugador in orden_jugadores:
-        clear()
-        imprimir_opciones_orden()
-        eleccion = ingresar_eleccion_orden(jugador)
-        elecciones += [(jugador, eleccion)]
-        clear()
-    return elecciones
 
 
 def obtener_predicciones(mano: tuple) -> "dict[str:int]":
@@ -157,22 +145,9 @@ def determinar_ganador_juego(puntaje_juego: dict) -> tuple:
     return (ganador_es, mayor_puntaje)
 
 
-def insertar_carta_por_valor(mazo_jugador: list, nueva_carta: tuple) -> "list[tuple]":
-    """ Devuelve un mazo con la carta insertada en función del valor. """
-
-    if mazo_jugador == []:
-        return [nueva_carta]
-    if mazo_jugador[0][0] == nueva_carta[0] and\
-       PALOS.index(mazo_jugador[0][1]) > PALOS.index(nueva_carta[1]):
-        return [nueva_carta] + mazo_jugador
-    if VALORES.index(mazo_jugador[0][0]) > VALORES.index(nueva_carta[0]):
-        return [nueva_carta] + mazo_jugador
-    else:
-        return [mazo_jugador[0]] + insertar_carta_por_valor(mazo_jugador[1:], nueva_carta)
-
-
 def insertar_carta_por_palo(mazo_jugador: list, nueva_carta: tuple) -> "list[tuple]":
     """ Devuelve un mazo con la carta insertada en función del palo. """
+    # Invirtiendo cada expresión se puede obtener un orden por valor.
     
     if mazo_jugador == []:
         return [nueva_carta]
@@ -183,7 +158,6 @@ def insertar_carta_por_palo(mazo_jugador: list, nueva_carta: tuple) -> "list[tup
         return [nueva_carta] + mazo_jugador
     else:
         return [mazo_jugador[0]] + insertar_carta_por_palo(mazo_jugador[1:], nueva_carta)
-
 
 
 def main():
