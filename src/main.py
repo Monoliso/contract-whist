@@ -16,7 +16,7 @@ def whist(orden_jugadores: "list[str]") -> tuple:
     imprimir_inicio_juego(orden_jugadores)
     for mano in BAZAS_POR_MANO:
         imprimir_inicio_mano(mano, orden_jugadores[0])
-        cartas_jugadores, triunfo = repartir_cartas(eleccion_orden, mano)
+        cartas_jugadores, triunfo = repartir_cartas(orden_jugadores, mano)
         datos_mano = (mano, orden_jugadores, cartas_jugadores, triunfo)
         predicciones = obtener_predicciones(datos_mano)
         puntos_mano = jugar_mano(datos_mano, predicciones)
@@ -24,13 +24,12 @@ def whist(orden_jugadores: "list[str]") -> tuple:
             puntos_juego[jugador] += puntos_mano[jugador]
         imprimir_puntaje_mano(puntos_mano, puntos_juego)
         orden_jugadores = orden_jugadores[1:] + [orden_jugadores[0]]  # Rotar lista de jugadores
-        eleccion_orden = eleccion_orden[1:] + [eleccion_orden[0]]
     imprimir_resultado_juego(puntos_juego)
     ganador_es = determinar_ganador_juego(puntos_juego)
     return ganador_es
 
 
-def repartir_cartas(jugadores: "list[tuple]", numero_bazas: int) -> "tuple[dict, set]":
+def repartir_cartas(jugadores: "list[str]", numero_bazas: int) -> "tuple[dict, set]":
     """ Dada una lista de jugadores y la cantidad de bazas que se juega,
         se le reparten la cantidad de cartas correspondiente a cada jugador y
         se devuelve el triunfo de la baza. """
@@ -38,15 +37,12 @@ def repartir_cartas(jugadores: "list[tuple]", numero_bazas: int) -> "tuple[dict,
     cartas_jugadores = dict.fromkeys(jugadores, None)
     mazo = {(x, y) for y in PALOS for x in VALORES}
 
-    for jugador, eleccion in jugadores:
+    for jugador in jugadores:
         cartas_jugador = list()
         for numero_carta in range(numero_bazas):
             carta = random.choice(list(mazo))
             mazo.remove(carta)
-            if eleccion == 1:
-                cartas_jugador = insertar_carta_por_palo(cartas_jugador, carta)
-            else:
-                cartas_jugador = insertar_carta_por_valor(cartas_jugador, carta)
+            cartas_jugador = insertar_carta_por_palo(cartas_jugador, carta)
         cartas_jugadores[jugador] = cartas_jugador
     triunfo = random.choice(list(mazo))
     return cartas_jugadores, triunfo
