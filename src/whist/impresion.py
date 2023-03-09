@@ -127,3 +127,17 @@ def imprimir_empate(resultado: tuple) -> None:
     ganadores = resultado[0]
     puntaje = resultado[1]
     print(f"Los ganadores fueron {ganadores} con {puntaje} puntos, felicitaciones! 🥳🎉")
+
+
+def imprimir_error_jugada(tipo_jugada: str, palo: str, cartas_disponibles: list) -> None:
+    if tipo_jugada == "palo_baza":
+        print(f"Seleccionó una carta con un palo distinto al de la baza teniendo "
+              f"al menos una carta con dicho palo ('{palo}').")
+        print("Debe seleccionar alguna de sus cartas con el palo de la baza.\n"
+              f"Las que cumplen con la condición son las numero {cartas_disponibles}.")
+    else:
+        print(f"Seleccionó una carta con un palo distinto al de triunfo teniendo "
+              f"al menos una carta con dicho palo ('{palo}').")
+        print("Debe seleccionar alguna de sus cartas con el palo de triunfo, ya que no "
+                "tiene ninguna con el palo de la baza.\n"
+                f"Las que cumplen con la condición son las numero {cartas_disponibles}.")
