@@ -7,12 +7,6 @@ import random
 PALOS = ['♣️', '♥️', '♦️', '♠️']
 VALORES = [str(i+1) for i in range(1, 10)] + ['J', 'Q', 'K', 'A']
 
-@dataclass
-class Jugada:
-    validez: bool
-    tipo: str
-    cartas: "list[tuple]"
-
 
 def repartir_cartas(jugadores: "list[str]", numero_bazas: int) -> "tuple[dict, set]":
     """ Dada una lista de jugadores y la cantidad de bazas que se juega,
@@ -33,12 +27,12 @@ def repartir_cartas(jugadores: "list[str]", numero_bazas: int) -> "tuple[dict, s
     return cartas_jugadores, triunfo
 
 
-def determinar_ganador_baza(mesa: dict, palo_baza_carta: tuple, triunfo: tuple) -> str:
+def determinar_ganador_baza(mesa: dict, carta_baza: tuple, triunfo: tuple) -> str:
     """ Devuelve el jugador que ganó la baza. """
 
     palo_triunfo = triunfo[1]
-    palo_baza = palo_baza_carta[1]
-    ganador = palo_baza_carta
+    palo_baza = carta_baza[1]
+    ganador = carta_baza
     for carta in mesa.keys():
         if carta[1] == palo_triunfo and\
                        (ganador[1] != palo_triunfo or
@@ -68,26 +62,28 @@ def insertar_carta_por_palo(mazo_jugador: list, nueva_carta: tuple) -> "list[tup
 
 
 def corroborar_jugada(cartas_jugador: "list[tuple]", jugada: int,
-                      palo_baza: str, palo_triunfo: str) -> Jugada:
+                      palo_baza: str, palo_triunfo: str) -> tuple:
 
     carta_seleccionada = cartas_jugador[jugada-1]
     palo_carta = carta_seleccionada[1]
     if palo_carta == palo_baza:
-        return Jugada(True, "", [])
+        return (True, "", [])
     if palos_baza_disponibles := obtener_cartas_con_palo(cartas_jugador, palo_baza):
-        return Jugada(False, "palo_baza", palos_baza_disponibles)
-    if triunfos_disponibles := obtener_cartas_con_palo(cartas_jugador, palo_triunfo):
-        return Jugada(False, "palo_triunfo", triunfos_disponibles)
-    return Jugada(True, "", [])
+        return (False, "palo_baza", palos_baza_disponibles)
+    elif palo_carta == palo_triunfo:
+        return (True, "", [])
+    elif triunfos_disponibles := obtener_cartas_con_palo(cartas_jugador, palo_triunfo):
+        return (False, "palo_triunfo", triunfos_disponibles)
+    return (True, "", [])
 
 
 def obtener_cartas_con_palo(cartas: list, palo: str) -> list:
     if not cartas:
         return []
     if cartas[0][1] == palo:
-        cartas[0] + obtener_cartas_con_palo(cartas[1:], palo)
+        return [cartas[0]] + obtener_cartas_con_palo(cartas[1:], palo)
     else:
-        obtener_cartas_con_palo(cartas[1:], palo)
+        return obtener_cartas_con_palo(cartas[1:], palo)
 
 
 def determinar_ganador_juego(puntaje_juego: dict) -> tuple:

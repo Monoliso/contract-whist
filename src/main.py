@@ -3,7 +3,10 @@ from whist import entrada, impresion, logica
 
 def whist(orden_jugadores: "list[str]") -> tuple:
     """ Permite jugar una partida de Whist. Maneja la entrada y salida del juego.
-        Devuelve una tupla con los ganadores y el puntaje con el que ganaron. """
+        Devuelve una tupla con los ganadores y el puntaje con el que ganaron. 
+        
+        Se toma como convención que carta_baza es la primera carta de la baza, y por lo
+        tanto la que determina el palo de la misma."""
 
     # Herramientas funcionales: lambda, map y filter. También está reduce pero con importación.
     BAZAS_POR_MANO = [i+1 for i in range(8)] + [i for i in range(8, 0, -1)]
@@ -48,23 +51,27 @@ def jugar_mano(mano: tuple, predicciones: dict) -> "dict[str:int]":
 
     numero_bazas, jugadores, cartas_jugadores, triunfo = mano
     bazas_ganadas = dict.fromkeys(jugadores, 0)
+
     for baza in range(numero_bazas):
         mesa = dict()
-        palo_baza = None
+        carta_baza = None
         for numero, jugador in enumerate(jugadores):
             cartas_jugador: list = cartas_jugadores[jugador]
             impresion.imprimir_seleccion_carta(triunfo, mesa, jugador, cartas_jugador)
-            jugada = entrada.ingresar_jugada(jugador, cartas_jugador, palo_baza, triunfo)
+
+            jugada = entrada.ingresar_jugada(jugador, cartas_jugador, carta_baza, triunfo)
             if numero == 0:
-                palo_baza = jugada
+                carta_baza = jugada
             cartas_jugador.remove(jugada)
             cartas_jugadores[jugador] = cartas_jugador
             mesa[jugada] = jugador
             if numero != len(jugadores)-1:
                 impresion.imprimir_transicion(jugadores[numero+1])
-        ganador_baza = logica.determinar_ganador_baza(mesa, palo_baza, triunfo)
+                
+        ganador_baza = logica.determinar_ganador_baza(mesa, carta_baza, triunfo)
         bazas_ganadas[ganador_baza] += 1
         jugadores = logica.actualizar_orden_jugadores(jugadores, ganador_baza)
+
         impresion.imprimir_ganador_baza(triunfo, mesa, ganador_baza)
         if baza < numero_bazas-1:
             impresion.imprimir_transicion(jugadores[0])

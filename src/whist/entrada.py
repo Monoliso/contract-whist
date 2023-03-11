@@ -1,7 +1,7 @@
 """ Este modulo incluye todas las funciones para obtener la entrada del usuario. """
 
 import random
-from whist.logica import corroborar_jugada, Jugada
+from whist.logica import corroborar_jugada
 from whist.impresion import imprimir_error_jugada
 
 def ingresar_jugadores():
@@ -53,11 +53,11 @@ def ingresar_jugada(jugador: str, cartas_jugador: "list[tuple]",
             elif not palo_baza:
                 condicion = False
             else:
-                jugada = corroborar_jugada(cartas_jugador, jugada, palo_baza[1], triunfo[1])
-                if jugada.validez:
+                validacion_jugada = corroborar_jugada(cartas_jugador, jugada, palo_baza[1], triunfo[1])
+                if validacion_jugada[0]:
                     condicion = False
                 else:
-                    imprimir_error_jugada(jugada.tipo, palo_baza[1], jugada.cartas)
+                    imprimir_error_jugada(validacion_jugada[1], palo_baza[1], validacion_jugada[2])
         except ValueError:
             input("Debe ingresar un número.")
     return cartas_jugador[jugada-1]
