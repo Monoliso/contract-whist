@@ -1,6 +1,5 @@
 """ Este módulo contiene toda la lógica para jugar una partida de Contract Whist """
 
-from dataclasses import dataclass
 import random
 
 
@@ -68,22 +67,21 @@ def corroborar_jugada(cartas_jugador: "list[tuple]", jugada: int,
     palo_carta = carta_seleccionada[1]
     if palo_carta == palo_baza:
         return (True, "", [])
-    if palos_baza_disponibles := obtener_cartas_con_palo(cartas_jugador, palo_baza):
+    if palos_baza_disponibles := obtener_indices_cartas_cierto_palo(cartas_jugador, palo_baza):
         return (False, "palo_baza", palos_baza_disponibles)
-    elif palo_carta == palo_triunfo:
+    if palo_carta == palo_triunfo:
         return (True, "", [])
-    elif triunfos_disponibles := obtener_cartas_con_palo(cartas_jugador, palo_triunfo):
+    if triunfos_disponibles := obtener_indices_cartas_cierto_palo(cartas_jugador, palo_triunfo):
         return (False, "palo_triunfo", triunfos_disponibles)
     return (True, "", [])
 
 
-def obtener_cartas_con_palo(cartas: list, palo: str) -> list:
-    if not cartas:
-        return []
-    if cartas[0][1] == palo:
-        return [cartas[0]] + obtener_cartas_con_palo(cartas[1:], palo)
-    else:
-        return obtener_cartas_con_palo(cartas[1:], palo)
+def obtener_indices_cartas_cierto_palo(cartas: list, palo: str) -> list:
+    resultado = list()
+    for indice, carta in enumerate(cartas):
+        if carta[1] == palo:
+            resultado += [indice+1]
+    return resultado
 
 
 def determinar_ganador_juego(puntaje_juego: dict) -> tuple:

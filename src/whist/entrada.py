@@ -1,8 +1,6 @@
 """ Este modulo incluye todas las funciones para obtener la entrada del usuario. """
 
 import random
-from whist.logica import corroborar_jugada
-from whist.impresion import imprimir_error_jugada
 
 def ingresar_jugadores():
     """ Se solicita al usuario inicial que ingrese los nombres de los jugadores separados por
@@ -42,22 +40,12 @@ def ingresar_prediccion(jugador: str, numero_bazas: int) -> "dict[str:int]":
     return jugador_prediccion
 
 
-def ingresar_jugada(jugador: str, cartas_jugador: "list[tuple]",
-                    palo_baza: tuple, triunfo: tuple) -> "tuple[str, str]":
+def ingresar_jugada(jugador: str) -> int:
     condicion = True
     while condicion:
         try:
             jugada = int(input(f"\n{jugador}, qué carta desea jugar?: "))
-            if (jugada > (largo:=len(cartas_jugador)) or jugada <= 0):
-                input(f"Debe seleccionar una carta dentro del rango 1-{largo}.")
-            elif not palo_baza:
-                condicion = False
-            else:
-                validacion_jugada = corroborar_jugada(cartas_jugador, jugada, palo_baza[1], triunfo[1])
-                if validacion_jugada[0]:
-                    condicion = False
-                else:
-                    imprimir_error_jugada(validacion_jugada[1], palo_baza[1], validacion_jugada[2])
+            condicion = False
         except ValueError:
             input("Debe ingresar un número.")
-    return cartas_jugador[jugada-1]
+    return jugada

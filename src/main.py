@@ -54,12 +54,12 @@ def jugar_mano(mano: tuple, predicciones: dict) -> "dict[str:int]":
 
     for baza in range(numero_bazas):
         mesa = dict()
-        carta_baza = None
+        carta_baza = tuple()
         for numero, jugador in enumerate(jugadores):
             cartas_jugador: list = cartas_jugadores[jugador]
             impresion.imprimir_seleccion_carta(triunfo, mesa, jugador, cartas_jugador)
 
-            jugada = entrada.ingresar_jugada(jugador, cartas_jugador, carta_baza, triunfo)
+            jugada = obtener_jugada_valida(jugador, cartas_jugador, carta_baza, triunfo)
             if numero == 0:
                 carta_baza = jugada
             cartas_jugador.remove(jugada)
@@ -77,6 +77,26 @@ def jugar_mano(mano: tuple, predicciones: dict) -> "dict[str:int]":
             impresion.imprimir_transicion(jugadores[0])
     puntos_mano = logica.determinar_puntos_mano(bazas_ganadas, predicciones)
     return puntos_mano
+
+
+def obtener_jugada_valida(jugador: str, cartas_jugador: "list[tuple]",
+                          palo_baza: tuple, triunfo: tuple) -> "tuple[str, str]":
+    condicion = True
+    while condicion:
+        jugada = entrada.ingresar_jugada(jugador)
+        if (jugada > (largo:=len(cartas_jugador)) or jugada <= 0):
+            input(f"Debe seleccionar una carta dentro del rango 1-{largo}.")
+        elif not palo_baza:
+            condicion = False
+        else:
+            validacion_jugada = logica.corroborar_jugada(cartas_jugador, jugada,
+                                                         palo_baza[1], triunfo[1])
+            if validacion_jugada[0]:
+                condicion = False
+            else:
+                impresion.imprimir_error_jugada(validacion_jugada[1], palo_baza[1],
+                                                validacion_jugada[2])
+    return cartas_jugador[jugada-1]
 
 
 def main():
