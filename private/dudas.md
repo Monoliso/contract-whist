@@ -9,6 +9,10 @@ Es por eso en donde *creo* que habría que reconocer corréctamente qué herrami
 
 Esto de hacer funciones puras duele a veces.
 
+Otra posibilidad, aunque con sus desventajas, es la de devolver junto al bool de salida un string crudo, formateado con la información a mostrar. Lo único que se hace con ese string es imprimirlo. La cosa es que desde el punto de vista de la memoria no es dificil ver que estoy pasando constantemente strings larguísimos pero con información relevante, así que no sé...
+
+Una tercera posibilidad es cortar esa función en múltiples condicionales en la subrutina invocadora, por lo tanto complejizando la función madre a costa de poder separar atómicamente sus partes propensas al fallo, pudiendo así frenar para realizar la comunicación necesaria.
+
 
 ## Las dependencias
 

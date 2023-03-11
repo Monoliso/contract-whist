@@ -1,3 +1,3 @@
 # Whist
 
-Este programa permite jugar una variante regional (sudamericana o argentina, no queda del todo claro) del Whist.
+Este programa permite jugar al [contract whist](https://en.m.wikipedia.org/wiki/Oh_Hell#Contract_Whist).

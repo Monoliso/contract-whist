@@ -78,8 +78,7 @@ def corroborar_jugada(cartas_jugador: "list[tuple]", jugada: int,
         return Jugada(False, "palo_baza", palos_baza_disponibles)
     if triunfos_disponibles := obtener_cartas_con_palo(cartas_jugador, palo_triunfo):
         return Jugada(False, "palo_triunfo", triunfos_disponibles)
-    else:
-        return Jugada(True, "", [])
+    return Jugada(True, "", [])
 
 
 def obtener_cartas_con_palo(cartas: list, palo: str) -> list:
